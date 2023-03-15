@@ -3,6 +3,7 @@ package com.cloudwebrtc.webrtc;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -77,6 +78,7 @@ public class FlutterWebRTCPlugin implements FlutterPlugin, ActivityAware, EventC
 
     @Override
     public void onAttachedToActivity(@NonNull ActivityPluginBinding binding) {
+        binding.getActivity().setVolumeControlStream(AudioManager.STREAM_MUSIC);
         methodCallHandler.setActivity(binding.getActivity());
         this.observer = new LifeCycleObserver();
         this.lifecycle = ((HiddenLifecycleReference) binding.getLifecycle()).getLifecycle();
