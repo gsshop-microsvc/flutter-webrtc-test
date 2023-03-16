@@ -18,6 +18,10 @@ FlutterWebRTC::~FlutterWebRTC() {}
 void FlutterWebRTC::HandleMethodCall(
     const flutter::MethodCall<EncodableValue>& method_call,
     std::unique_ptr<flutter::MethodResult<EncodableValue>> result) {
+
+  std::cout << "[keykat] welcome to cpp" << std::endl;
+  std::cout << method_call.method_name() << std::endl;
+
   if (method_call.method_name().compare("createPeerConnection") == 0) {
     if (!method_call.arguments()) {
       result->Error("Bad Arguments", "Null arguments received");
@@ -469,6 +473,7 @@ void FlutterWebRTC::HandleMethodCall(
     const std::string track_id = findString(params, "trackId");
     MediaStreamTrackSwitchCamera(track_id, std::move(result));
   } else if (method_call.method_name().compare("setVolume") == 0) {
+    std::cout << "[keykat] setVolume at cpp" << std::endl;
   } else if (method_call.method_name().compare("getLocalDescription") == 0) {
     if (!method_call.arguments()) {
       result->Error("Bad Arguments", "Null constraints arguments received");
@@ -629,6 +634,8 @@ void FlutterWebRTC::HandleMethodCall(
     const EncodableMap transceiverInit = findMap(params, "transceiverInit");
     const std::string mediaType = findString(params, "mediaType");
     const std::string trackId = findString(params, "trackId");
+
+    std::cout << mediaType << std::endl;
 
     RTCPeerConnection* pc = PeerConnectionForId(peerConnectionId);
     if (pc == nullptr) {
