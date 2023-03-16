@@ -22,6 +22,7 @@ import androidx.annotation.RequiresApi;
 import com.cloudwebrtc.webrtc.audio.AudioDeviceKind;
 import com.cloudwebrtc.webrtc.audio.AudioSwitchManager;
 import com.cloudwebrtc.webrtc.record.AudioChannel;
+import com.cloudwebrtc.webrtc.record.AudioTrackInterceptor;
 import com.cloudwebrtc.webrtc.record.FrameCapturer;
 import com.cloudwebrtc.webrtc.utils.AnyThreadResult;
 import com.cloudwebrtc.webrtc.utils.Callback;
@@ -156,6 +157,9 @@ public class MethodCallHandlerImpl implements MethodCallHandler, StateProvider {
     EglBase.Context eglContext = EglUtils.getRootEglBaseContext();
 
     getUserMediaImpl = new GetUserMediaImpl(this, context);
+
+    AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0);
 
     audioDeviceModule = JavaAudioDeviceModule.builder(context)
             .setUseHardwareAcousticEchoCanceler(true)
@@ -1243,7 +1247,7 @@ public class MethodCallHandlerImpl implements MethodCallHandler, StateProvider {
     if (track instanceof AudioTrack) {
       Log.d(TAG, "[keykat] setVolume(): " + id + "," + volume);
       try {
-        // ((AudioTrack) track).setVolume(volume);
+        ((AudioTrack) track).setVolume(volume);
         AudioManager audio = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         audio.setStreamVolume(AudioManager.STREAM_MUSIC, (int) Math.round(volume), 0);
       } catch (Exception e) {
