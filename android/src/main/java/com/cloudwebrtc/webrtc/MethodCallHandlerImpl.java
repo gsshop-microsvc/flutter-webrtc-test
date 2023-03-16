@@ -10,6 +10,7 @@ import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
 import android.media.AudioDeviceInfo;
+import android.media.AudioManager;
 import android.os.Build;
 import android.util.Log;
 import android.util.LongSparseArray;
@@ -471,6 +472,7 @@ public class MethodCallHandlerImpl implements MethodCallHandler, StateProvider {
         break;
       }
       case "setVolume": {
+        System.out.println("[keykat] setVolume!!!!!!!!!!");
         String trackId = call.argument("trackId");
         double volume = call.argument("volume");
         mediaStreamTrackSetVolume(trackId, volume);
@@ -1237,10 +1239,13 @@ public class MethodCallHandlerImpl implements MethodCallHandler, StateProvider {
 
   public void mediaStreamTrackSetVolume(final String id, final double volume) {
     MediaStreamTrack track = getTrackForId(id);
+    System.out.println("[keykat] setVolume(): " + id + "," + volume);
     if (track instanceof AudioTrack) {
-      Log.d(TAG, "setVolume(): " + id + "," + volume);
+      Log.d(TAG, "[keykat] setVolume(): " + id + "," + volume);
       try {
-        ((AudioTrack) track).setVolume(volume);
+        // ((AudioTrack) track).setVolume(volume);
+        AudioManager audio = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+        audio.setStreamVolume(AudioManager.STREAM_MUSIC, (int) Math.round(volume), 0);
       } catch (Exception e) {
         Log.e(TAG, "setVolume(): error", e);
       }
