@@ -9,7 +9,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.1.1'
+        classpath 'com.android.tools.build:gradle:7.4.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -49,8 +49,9 @@ android {
 }
 
 dependencies {
-    implementation 'com.github.webrtc-sdk:android:104.5112.05'
-    implementation "com.twilio:audioswitch:1.1.5"
+    implementation 'com.github.webrtc-sdk:android:104.5112.07'
+//    implementation "com.twilio:audioswitch:1.1.5"
+    implementation project (':audioswitch')
     implementation 'androidx.annotation:annotation:1.1.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
