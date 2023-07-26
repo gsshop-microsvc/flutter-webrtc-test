@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 import '../flutter_webrtc.dart';
+import 'native/audio_configuration.dart';
 
 class Helper {
   static Future<List<MediaDeviceInfo>> enumerateDevices(String type) async {
@@ -150,4 +151,12 @@ class Helper {
     }
     track.enabled = !mute;
   }
+
+  /// Set the audio configuration to for Android.
+  /// Must be set before initiating a WebRTC session and cannot be changed
+  /// mid session.
+  static Future<void> setAndroidAudioConfiguration(
+          AndroidAudioConfiguration androidAudioConfiguration) =>
+      AndroidNativeAudioManagement.setAndroidAudioConfiguration(
+          androidAudioConfiguration);
 }

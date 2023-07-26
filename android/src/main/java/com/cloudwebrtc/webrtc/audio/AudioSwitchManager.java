@@ -19,6 +19,7 @@ import kotlin.Unit;
 import kotlin.jvm.functions.Function2;
 
 public class AudioSwitchManager {
+    public static final String TAG = "AudioSwitchManager";
     @NonNull
     private final Context context;
     @NonNull
@@ -43,6 +44,20 @@ public class AudioSwitchManager {
     @Nullable
     private AudioSwitch audioSwitch;
 
+    /**
+     * The audio focus mode to use while started.
+     *
+     * Defaults to [AudioManager.AUDIOFOCUS_GAIN].
+     */
+    private int focusMode = AudioManager.AUDIOFOCUS_GAIN;
+
+    /**
+     * The audio mode to use while started.
+     *
+     * Defaults to [AudioManager.MODE_NORMAL].
+     */
+    private int audioMode = AudioManager.MODE_NORMAL;
+
     public AudioSwitchManager(@NonNull Context context) {
         this.context = context;
         this.audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
@@ -64,6 +79,8 @@ public class AudioSwitchManager {
                         audioFocusChangeListener,
                         preferredDeviceList
                 );
+                audioSwitch.setFocusMode(focusMode);
+                audioSwitch.setAudioMode(audioMode);
                 audioSwitch.start(audioDeviceChangeListener);
                 audioSwitch.activate();
             });
@@ -135,6 +152,95 @@ public class AudioSwitchManager {
     public void selectAudioOutput(@Nullable AudioDeviceKind kind) {
         if (kind != null) {
             selectAudioOutput(kind.audioDeviceClass);
+        }
+    }
+
+
+    public void setAudioConfiguration(Map<String, Object> configuration) {
+        if(configuration == null) {
+            return;
+        }
+
+        String audioMode = null;
+        if (configuration.get("androidAudioMode") instanceof String) {
+            audioMode = (String) configuration.get("androidAudioMode");
+        }
+
+        String focusMode = null;
+        if (configuration.get("androidAudioFocusMode") instanceof String) {
+            focusMode = (String) configuration.get("androidAudioFocusMode");
+        }
+
+        setAudioMode(audioMode);
+        setFocusMode(focusMode);
+    }
+
+    public void setAudioMode(@Nullable String audioModeString) {
+        if (audioModeString == null) {
+            return;
+        }
+
+        int audioMode = -1;
+        switch (audioModeString) {
+            case "normal":
+                audioMode = AudioManager.MODE_NORMAL;
+                break;
+            case "callScreening":
+                audioMode = AudioManager.MODE_CALL_SCREENING;
+                break;
+            case "inCall":
+                audioMode = AudioManager.MODE_IN_CALL;
+                break;
+            case "inCommunication":
+                audioMode = AudioManager.MODE_IN_COMMUNICATION;
+                break;
+            case "ringtone":
+                audioMode = AudioManager.MODE_RINGTONE;
+                break;
+            default:
+                Log.w(TAG, "Unknown audio mode: " + audioModeString);
+                break;
+        }
+
+        // Valid audio modes start from 0
+        if (audioMode >= 0) {
+            this.audioMode = audioMode;
+            if (audioSwitch != null) {
+                Objects.requireNonNull(audioSwitch).setAudioMode(audioMode);
+            }
+        }
+    }
+
+    public void setFocusMode(@Nullable String focusModeString) {
+        if (focusModeString == null) {
+            return;
+        }
+
+        int focusMode = -1;
+        switch(focusModeString) {
+            case "gain":
+                focusMode = AudioManager.AUDIOFOCUS_GAIN;
+                break;
+            case "gainTransient":
+                focusMode = AudioManager.AUDIOFOCUS_GAIN_TRANSIENT;
+                break;
+            case "gainTransientExclusive":
+                focusMode = AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE;
+                break;
+            case "gainTransientMayDuck":
+                focusMode = AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK;
+                break;
+            default:
+                Log.w(TAG, "Unknown audio focus mode: " + focusModeString);
+                break;
+        }
+
+        // Valid focus modes start from 1
+        if (focusMode > 0) {
+            this.focusMode = focusMode;
+            if (audioSwitch != null) {
+                Objects.requireNonNull(audioSwitch).setFocusMode(focusMode);
+            }
         }
     }
 }
